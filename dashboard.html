@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex"/>
+  <title>Dashboard | Teengro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .page-main { padding-top: 58px; }
+
+    /* ══════════════════════════════════════════
+       PAGE LOADING SCREEN
+    ══════════════════════════════════════════ */
+    #pageLoader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+    body[data-theme="dark"]  #pageLoader { background: #08090b; }
+    body[data-theme="light"] #pageLoader { background: #f7f7f5; }
+
+    #pageLoader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .pl-atom {
+      width: 96px;
+      height: 96px;
+    }
+
+    /* Orbit draw animation */
+    .pl-orbit {
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+    body[data-theme="dark"]  .pl-orbit { stroke: rgba(255,255,255,0.85); }
+    body[data-theme="light"] .pl-orbit { stroke: rgba(0,0,0,0.82); }
+
+    .pl-orbit-1 { stroke-width: 2.6; animation: plDraw 3.6s ease-in-out infinite; }
+    .pl-orbit-2 { stroke-width: 2.6; animation: plDraw 4.3s ease-in-out infinite 0.4s; }
+    .pl-orbit-3 { stroke-width: 2.6; animation: plDraw 5.0s ease-in-out infinite 0.8s; }
+
+    @keyframes plDraw {
+      0%   { stroke-dashoffset:  100; opacity: 0.2; }
+      40%  { stroke-dashoffset:    0; opacity: 1;   }
+      70%  { stroke-dashoffset:    0; opacity: 1;   }
+      100% { stroke-dashoffset: -100; opacity: 0.2; }
+    }
+
+    /* Electrons on page loader */
+    .pl-electron {
+      animation: plPulse 2s ease-in-out infinite;
+    }
+    body[data-theme="dark"]  .pl-electron { fill: rgba(255,255,255,0.9); }
+    body[data-theme="light"] .pl-electron { fill: rgba(0,0,0,0.85); }
+
+    .pl-electron-2 { animation-delay: 0.7s; }
+    .pl-electron-3 { animation-delay: 1.4s; }
+
+    @keyframes plPulse {
+      0%,100% { opacity: 0.3; transform: scale(0.8); }
+      50%      { opacity: 1;   transform: scale(1.2); }
+    }
+
+    .pl-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.3;
+      animation: plLabelFade 2s ease-in-out infinite;
+    }
+    body[data-theme="dark"]  .pl-label { color: #fff; }
+    body[data-theme="light"] .pl-label { color: #000; }
+
+    @keyframes plLabelFade {
+      0%,100% { opacity: 0.2; }
+      50%      { opacity: 0.5; }
+    }
+
+    /* ══════════════════════════════════════════
+       CHAT ATOM LOADER  (replaces 3 dots)
+    ══════════════════════════════════════════ */
+    .gemini-loader {
+      display: flex;
+      align-items: center;
+      padding: 6px 0 4px;
+    }
+
+    .gemini-loader svg {
+      /* colour adapts to theme via currentColor on stroke/fill */
+    }
+
+    /* Orbit draw inside chat bubble */
+    .gl-orbit {
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+    body[data-theme="dark"] .gl-orbit {
+      stroke: #ffffff;
+      filter: drop-shadow(0 0 4px rgba(99,102,241,0.5));
+      animation-name: glDraw, glColorDark;
+      animation-timing-function: ease-in-out, ease-in-out;
+      animation-iteration-count: infinite, infinite;
+    }
+    body[data-theme="light"] .gl-orbit {
+      stroke: #111111;
+      filter: drop-shadow(0 0 3px rgba(59,130,246,0.3));
+      animation-name: glDraw, glColorLight;
+      animation-timing-function: ease-in-out, ease-in-out;
+      animation-iteration-count: infinite, infinite;
+    }
+
+    .gl-orbit-1 { stroke-width: 5; animation-duration: 3.5s, 8s;  animation-delay: 0s, 0s; }
+    .gl-orbit-2 { stroke-width: 5; animation-duration: 4.2s, 8s;  animation-delay: 0.35s, 2.6s; }
+    .gl-orbit-3 { stroke-width: 5; animation-duration: 4.9s, 8s;  animation-delay: 0.7s,  5.2s; }
+
+    @keyframes glDraw {
+      0%   { stroke-dashoffset:  100; opacity: 0.12; }
+      40%  { stroke-dashoffset:    0; opacity: 1;    }
+      70%  { stroke-dashoffset:    0; opacity: 1;    }
+      100% { stroke-dashoffset: -100; opacity: 0.12; }
+    }
+
+    /* Dark theme: white → blue → purple → white */
+    @keyframes glColorDark {
+      0%,100% { stroke: #ffffff; filter: drop-shadow(0 0 4px rgba(255,255,255,0.35)); }
+      33%     { stroke: #60a5fa; filter: drop-shadow(0 0 6px rgba(96,165,250,0.6));  }
+      66%     { stroke: #a78bfa; filter: drop-shadow(0 0 6px rgba(167,139,250,0.6)); }
+    }
+
+    /* Light theme: black → blue → purple → black */
+    @keyframes glColorLight {
+      0%,100% { stroke: #111111; filter: drop-shadow(0 0 3px rgba(0,0,0,0.2));       }
+      33%     { stroke: #3b82f6; filter: drop-shadow(0 0 5px rgba(59,130,246,0.45)); }
+      66%     { stroke: #8b5cf6; filter: drop-shadow(0 0 5px rgba(139,92,246,0.45)); }
+    }
+
+    .gl-electron {
+      animation: glElec 2.2s ease-in-out infinite;
+    }
+    body[data-theme="dark"]  .gl-electron { fill: #ffffff; filter: drop-shadow(0 0 5px rgba(99,102,241,0.8)); }
+    body[data-theme="light"] .gl-electron { fill: #111111; filter: drop-shadow(0 0 4px rgba(59,130,246,0.5)); }
+
+    .gl-electron-2 { animation-delay: 0.75s; }
+    .gl-electron-3 { animation-delay: 1.5s; }
+
+    .gl-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+      animation: glLabelFade 1.8s ease-in-out infinite;
+    }
+    body[data-theme="dark"]  .gl-label { color: rgba(255,255,255,0.45); }
+    body[data-theme="light"] .gl-label { color: rgba(0,0,0,0.4); }
+    @keyframes glLabelFade {
+      0%,100% { opacity: 0.4; }
+      50%      { opacity: 0.9; }
+    }
+
+    @keyframes glElec {
+      0%,100% { opacity: 0.2;  transform: scale(0.7);  }
+      50%      { opacity: 1;   transform: scale(1.3); }
+    }
+  </style>
+</head>
+
+<body class="about-body" data-theme="dark">
+
+<!-- ══════════════════════════════════════════
+     PAGE LOADING SCREEN
+══════════════════════════════════════════ -->
+<div id="pageLoader">
+  <svg class="pl-atom" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(150,150)">
+
+      <!-- Orbit 1: -25° -->
+      <g transform="rotate(-25)">
+        <ellipse class="pl-orbit pl-orbit-1" cx="0" cy="0" rx="110" ry="36" pathLength="100"/>
+        <circle  class="pl-electron"          cx="78"  cy="-26" r="7" style="transform-origin:78px -26px"/>
+      </g>
+
+      <!-- Orbit 2: +35° -->
+      <g transform="rotate(35)">
+        <ellipse class="pl-orbit pl-orbit-2" cx="0" cy="0" rx="110" ry="36" pathLength="100"/>
+        <circle  class="pl-electron pl-electron-2" cx="-110" cy="0"  r="7" style="transform-origin:-110px 0"/>
+      </g>
+
+      <!-- Orbit 3: +85° -->
+      <g transform="rotate(85)">
+        <ellipse class="pl-orbit pl-orbit-3" cx="0" cy="0" rx="110" ry="36" pathLength="100"/>
+        <circle  class="pl-electron pl-electron-3" cx="0"   cy="36" r="7" style="transform-origin:0 36px"/>
+      </g>
+
+    </g>
+  </svg>
+  <span class="pl-label">Loading</span>
+</div>
+
+<!-- Profile overlay + panel -->
+
+
+<header class="navbar">
+  <div class="logo">
+    <img src="logo-dark.png"  class="logo-img logo-dark"  alt="Teengro" />
+    <img src="logo-light.png" class="logo-img logo-light" alt="Teengro" />
+  </div>
+  <div class="nav-right">
+    <button class="profile-trigger" id="profileTriggerNav" title="My Profile">?</button>
+    <button class="hamburger" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+    <div class="menu-dropdown" id="menuDropdown">
+    <a href="index.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="about.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>About Us</a>
+    <a href="founder.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Meet the Founder</a>
+    <a href="help.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+    <div class="menu-divider"></div>
+    <button id="profileTriggerMenu"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>My Profile</button>
+    <div class="menu-divider"></div>
+    <button id="themeToggle"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Change theme</button>
+    <div class="menu-divider"></div>
+    <a href="login.html" id="navLoginLink"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Login</a>
+    <button id="navLogoutBtn" onclick="logout()" style="display:none;"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</button>
+  </div>
+</header>
+
+<main class="page-main">
+  <div class="ai-shell">
+    <section class="ai-controls">
+      <div class="ai-control">
+        <label>Class</label>
+        <select id="classLevel">
+          <option>8</option><option>9</option>
+          <option selected>10</option>
+          <option>11</option><option>12</option>
+        </select>
+      </div>
+      <div class="ai-control">
+        <label>Board</label>
+        <select id="board">
+          <option selected>ICSE</option>
+          <option>CBSE</option>
+          <option>SSLC</option>
+        </select>
+      </div>
+      <div class="ai-control">
+        <label>Subject</label>
+        <select id="subject">
+          <option value="Maths">Maths</option>
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Biology">Biology</option>
+          <option value="English Literature">English Literature</option>
+          <option value="English Grammar">English Grammar</option>
+          <option value="History">History &amp; Civics / Economics</option>
+          <option value="Geography">Geography</option>
+          <option value="Computer Applications">Computer Applications</option>
+        </select>
+      </div>
+      <div class="ai-control">
+        <label>Chapter</label>
+        <input id="chapter" placeholder="e.g. Quadratic Equations" />
+      </div>
+    </section>
+
+    <section class="free-chat-shell">
+      <div id="chatWindow" class="free-chat-window"></div>
+      <div class="free-input-wrapper">
+        <div id="modelDropdown" class="model-dropdown-panel">
+          <div class="mdp-header">Model</div>
+          <div class="mdp-option" data-model="t1">
+            <span class="mdp-icon">⚡</span>
+            <div class="mdp-info"><div class="mdp-name">T1 — Flash</div><div class="mdp-desc">Fast · Great for most questions</div></div>
+            <span class="mdp-check" id="checkT1">✓</span>
+          </div>
+          <div class="mdp-option" data-model="t2">
+            <span class="mdp-icon">🧠</span>
+            <div class="mdp-info"><div class="mdp-name">T2 — Pro</div><div class="mdp-desc">Powerful · For complex problems</div></div>
+            <span class="mdp-check" id="checkT2"></span>
+          </div>
+        </div>
+        <div id="uploadDropdown" class="upload-dropdown-panel">
+          <div class="upload-option" data-upload-type="file">
+            <svg class="upload-option-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <div class="upload-option-text">
+              <div class="upload-option-title">Upload PDF/Document</div>
+              <div class="upload-option-desc">Browse and upload files</div>
+            </div>
+          </div>
+          <div class="upload-option" data-upload-type="photo">
+            <svg class="upload-option-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <div class="upload-option-text">
+              <div class="upload-option-title">Upload Photo</div>
+              <div class="upload-option-desc">Select image from gallery</div>
+            </div>
+          </div>
+          <div class="upload-option" data-upload-type="camera">
+            <svg class="upload-option-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <div class="upload-option-text">
+              <div class="upload-option-title">Take Photo</div>
+              <div class="upload-option-desc">Use camera to capture</div>
+            </div>
+          </div>
+        </div>
+        <form id="questionForm" class="free-input-bar">
+          <div id="uploadChipsRow" class="upload-chips-row"></div>
+          <div class="input-textarea-row">
+            <textarea id="questionInput" placeholder="Ask anything…" rows="1"></textarea>
+          </div>
+          <div class="input-bottom-bar">
+            <div class="input-left-slot">
+              <button type="button" id="uploadBtn" class="tb-icon-btn" title="Attach file or image">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.doc,.docx" multiple style="display:none;" />
+              <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" />
+              <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" />
+            </div>
+            <div class="input-actions-slot">
+              <button type="button" id="modelBtn" class="model-chip-btn" title="Choose model">
+                <span class="model-chip-icon">⚡</span>
+                <span id="modelPillLabel">T1 · Flash</span>
+                <svg class="model-chip-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button type="button" id="voiceBtn" class="tb-icon-btn" title="Voice input">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4z"/>
+                  <path fill="none" stroke="currentColor" stroke-width="2" d="M19 10a7 7 0 0 1-14 0M12 19v4M8 23h8"/>
+                </svg>
+              </button>
+              <button type="submit" id="sendBtn" class="tb-send" title="Send">
+                <svg id="sendIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <svg id="stopIcon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="ai-disclaimer">
+          Teengro AI can make mistakes. Please verify important information.
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  /* ── Dismiss page loader once session check + DOM ready ── */
+  (function() {
+    function hidePL() {
+      const pl = document.getElementById("pageLoader");
+      if (pl) pl.classList.add("hidden");
+    }
+    // Hide after script.js finishes auth check (DOMContentLoaded fires, then auth resolves)
+    // We give a short minimum display so the animation is visible
+    const minShow = 900; // ms
+    const start = Date.now();
+    window.__hidePageLoader = function() {
+      const elapsed = Date.now() - start;
+      const delay   = Math.max(0, minShow - elapsed);
+      setTimeout(hidePL, delay);
+    };
+    // Fallback: always hide after 4s even if auth hangs
+    setTimeout(hidePL, 4000);
+  })();
+</script>
+<script src="script.js"></script>
+</body>
+</html>

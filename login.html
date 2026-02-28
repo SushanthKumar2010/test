@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Login to Teengro and continue learning with your personal AI tutor built for focused study." />
+  <title>Login | Teengro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    .auth-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px 48px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      padding: 36px 32px;
+    }
+    body[data-theme="dark"]  .auth-card { background: #0d1117; border: 1px solid rgba(255,255,255,0.07); }
+    body[data-theme="light"] .auth-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+
+    .auth-card h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .auth-card .auth-sub { font-size: 0.88rem; opacity: 0.45; margin-bottom: 28px; }
+
+    .auth-divider { height: 1px; margin-bottom: 24px; }
+    body[data-theme="dark"]  .auth-divider { background: rgba(255,255,255,0.07); }
+    body[data-theme="light"] .auth-divider { background: rgba(0,0,0,0.07); }
+
+    .auth-message { font-size: 0.83rem; padding: 10px 12px; border-radius: 8px; margin-bottom: 16px; display: none; }
+    .auth-message.error   { background: rgba(239,68,68,0.12); color: #f87171; display: block; }
+    .auth-message.success { background: rgba(16,185,129,0.12); color: #34d399; display: block; }
+
+    .auth-form { display: flex; flex-direction: column; gap: 14px; }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+    .auth-field label {
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.45;
+    }
+
+    /* Standard input */
+    .auth-field input {
+      padding: 11px 14px; border-radius: 10px;
+      font-size: 0.9rem; font-family: inherit; outline: none;
+      transition: border-color 0.15s; width: 100%;
+    }
+    body[data-theme="dark"]  .auth-field input { background: #05080b; border: 1px solid rgba(255,255,255,0.1); color: #e5e7eb; }
+    body[data-theme="light"] .auth-field input { background: #f9fafb; border: 1px solid rgba(0,0,0,0.1); color: #111827; }
+    body[data-theme="dark"]  .auth-field input:focus { border-color: rgba(255,255,255,0.28); }
+    body[data-theme="light"] .auth-field input:focus { border-color: rgba(0,0,0,0.28); }
+    .auth-field input::placeholder { opacity: 0.32; }
+
+    /* ── Password field with eye INSIDE the border ── */
+    .pw-field {
+      display: flex;
+      align-items: center;
+      border-radius: 10px;
+      border: 1px solid;
+      transition: border-color 0.15s;
+      overflow: hidden;
+    }
+    body[data-theme="dark"]  .pw-field { background: #05080b; border-color: rgba(255,255,255,0.1); }
+    body[data-theme="light"] .pw-field { background: #f9fafb; border-color: rgba(0,0,0,0.1); }
+    body[data-theme="dark"]  .pw-field:focus-within { border-color: rgba(255,255,255,0.28); }
+    body[data-theme="light"] .pw-field:focus-within { border-color: rgba(0,0,0,0.28); }
+
+    .pw-field input {
+      flex: 1;
+      border: none !important;
+      background: transparent !important;
+      padding: 11px 4px 11px 14px;
+      outline: none;
+      font-size: 0.9rem;
+      font-family: inherit;
+      min-width: 0;
+    }
+    body[data-theme="dark"]  .pw-field input { color: #e5e7eb; }
+    body[data-theme="light"] .pw-field input { color: #111827; }
+    .pw-field input::placeholder { opacity: 0.32; }
+
+    .pw-eye-btn {
+      flex-shrink: 0;
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: inherit; opacity: 0.38;
+      transition: opacity 0.15s;
+      padding: 0;
+    }
+    .pw-eye-btn:hover { opacity: 0.75; }
+
+    .auth-submit {
+      padding: 13px; border-radius: 999px; border: none;
+      font-size: 0.92rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; background: #10b981; color: #020617;
+      margin-top: 4px; transition: opacity 0.15s, transform 0.12s;
+    }
+    .auth-submit:hover  { opacity: 0.88; transform: translateY(-1px); }
+    .auth-submit:active { transform: translateY(0); }
+    .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .auth-switch { text-align: center; font-size: 0.85rem; margin-top: 18px; opacity: 0.55; }
+    .auth-switch a { font-weight: 600; text-decoration: none; opacity: 1; }
+    body[data-theme="dark"]  .auth-switch a { color: #e5e7eb; }
+    body[data-theme="light"] .auth-switch a { color: #111827; }
+    .auth-switch a:hover { text-decoration: underline; }
+
+    #forgotPasswordLink { opacity: 0.6; }
+    body[data-theme="dark"]  #forgotPasswordLink { color: #e5e7eb; }
+    body[data-theme="light"] #forgotPasswordLink { color: #111827; }
+    #forgotPasswordLink:hover { opacity: 1; text-decoration: underline; }
+  </style>
+</head>
+<body data-theme="dark">
+
+<header class="navbar">
+  <div class="logo">
+    <img src="logo-dark.png"  class="logo-img logo-dark"  alt="Teengro" />
+    <img src="logo-light.png" class="logo-img logo-light" alt="Teengro" />
+  </div>
+  <div class="nav-right">
+    <button class="profile-trigger" id="profileTriggerNav" title="My Profile">?</button>
+    <button class="hamburger" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+    <div class="menu-dropdown" id="menuDropdown">
+    <a href="index.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="about.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>About Us</a>
+    <a href="founder.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Meet the Founder</a>
+    <a href="help.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+    <div class="menu-divider"></div>
+    <button id="profileTriggerMenu"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>My Profile</button>
+    <div class="menu-divider"></div>
+    <button id="themeToggle"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Change theme</button>
+    <div class="menu-divider"></div>
+    <a href="login.html" id="navLoginLink"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Login</a>
+    <button id="navLogoutBtn" onclick="logout()" style="display:none;"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</button>
+  </div>
+</header>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <h1>Welcome back</h1>
+    <p class="auth-sub">Login to continue learning.</p>
+    <div class="auth-divider"></div>
+    <div id="authMessage" class="auth-message"></div>
+    <form class="auth-form" onsubmit="login(event)">
+      <div class="auth-field">
+        <label>Email or Username</label>
+        <input type="text" id="emailOrUsername" placeholder="your@email.com or @username" required autocomplete="username" />
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="pw-field">
+          <input type="password" id="password" placeholder="••••••••" required />
+          <button type="button" class="pw-eye-btn" id="pwToggle" title="Show / hide password">
+            <svg id="eyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div style="text-align: right; margin-top: 6px;">
+          <a href="#" id="forgotPasswordLink" style="font-size: 0.8rem; text-decoration: none; font-weight: 500;">Forgot password?</a>
+        </div>
+      </div>
+      <button type="submit" class="auth-submit" id="loginBtn">Continue</button>
+    </form>
+    <p class="auth-switch">New here? <a href="signup.html">Create an account</a></p>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="forgot-pw-modal" style="display: none;">
+  <div class="forgot-pw-overlay"></div>
+  <div class="forgot-pw-card">
+    <h2>Reset Password</h2>
+    <p class="forgot-pw-desc">Enter your email or username and we'll send you a password reset link.</p>
+    <div id="forgotMessage" class="auth-message"></div>
+    <form id="forgotPasswordForm" class="auth-form">
+      <div class="auth-field">
+        <label>Email or Username</label>
+        <input type="text" id="forgotEmailOrUsername" placeholder="your@email.com or @username" required />
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" id="cancelForgotBtn" class="auth-submit" style="background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.2); flex: 1;">Cancel</button>
+        <button type="submit" id="sendResetBtn" class="auth-submit" style="flex: 1;">Send Reset Link</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="about-footer">© 2026 Teengro. Built by a teen, for teens.</footer>
+
+<script src="script.js"></script>
+<script>
+  // Inline eye toggle — runs immediately, no dependency on script.js timing
+  document.getElementById('pwToggle')?.addEventListener('click', function() {
+    const inp = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (!inp) return;
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  });
+</script>
+</body>
+</html>

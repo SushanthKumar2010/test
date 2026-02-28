@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Teengro Help Center — find answers to common questions, contact our support team, and get help with accounts, bugs, or feedback.">
+  <title>Help — Teengro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    .help-hero {
+      min-height: calc(100vh - 54px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 28px 100px;  /* bottom room for scroll hint */
+      max-width: 680px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Soft glow */
+    .help-hero::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 460px;
+      border-radius: 50%; pointer-events: none; z-index: 0;
+    }
+    body[data-theme="dark"]  .help-hero::before { background: radial-gradient(ellipse at 50% 25%, rgba(99,102,241,0.07) 0%, transparent 65%); }
+    body[data-theme="light"] .help-hero::before { background: radial-gradient(ellipse at 50% 25%, rgba(99,102,241,0.05) 0%, transparent 65%); }
+    .help-hero > * { position: relative; z-index: 1; }
+
+    /* Eyebrow */
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 999px;
+      margin-bottom: 28px;
+    }
+    body[data-theme="dark"]  .hero-eyebrow { background: rgba(99,102,241,0.1); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); }
+    body[data-theme="light"] .hero-eyebrow { background: rgba(99,102,241,0.07); color: #4f46e5; border: 1px solid rgba(99,102,241,0.18); }
+
+    .help-hero h1 {
+      font-size: clamp(2.4rem, 6.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -0.03em;
+    }
+    .help-hero p {
+      font-size: 1rem;
+      opacity: 0.52;
+      line-height: 1.72;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    /* Scroll hint */
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 0; right: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 0.2; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      animation: bounce 2.5s ease-in-out infinite;
+      cursor: default;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
+
+    .help-section {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 28px 64px;
+    }
+    .help-section h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.35;
+      margin: 0 0 18px;
+    }
+
+    /* ── FAQ ── */
+    .faq-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .faq-item {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid transparent;
+    }
+    body[data-theme="dark"]  .faq-item { background: #0d1117; border-color: rgba(255,255,255,0.07); }
+    body[data-theme="light"] .faq-item { background: #f9fafb; border-color: rgba(0,0,0,0.07); }
+
+    .faq-question {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+      gap: 12px;
+      font-family: inherit;
+      transition: opacity 0.12s;
+    }
+    body[data-theme="dark"]  .faq-question { color: #e5e7eb; }
+    body[data-theme="light"] .faq-question { color: #111827; }
+    .faq-question:hover { opacity: 0.8; }
+
+    .faq-chevron {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      opacity: 0.4;
+      transition: transform 0.22s ease;
+    }
+    .faq-item.active .faq-chevron { transform: rotate(180deg); opacity: 0.7; }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      transition: max-height 0.28s ease, padding 0.22s ease;
+      padding: 0 16px;
+    }
+    body[data-theme="dark"]  .faq-answer { color: #9ca3af; }
+    body[data-theme="light"] .faq-answer { color: #4b5563; }
+    .faq-item.active .faq-answer { max-height: 300px; padding: 0 16px 16px; }
+
+    /* ── Contact form ── */
+    .contact-form { display: flex; flex-direction: column; gap: 14px; }
+
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      opacity: 0.5;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .form-field input,
+    .form-field textarea {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    body[data-theme="dark"] .form-field input,
+    body[data-theme="dark"] .form-field textarea {
+      background: #0d1117;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e5e7eb;
+    }
+    body[data-theme="light"] .form-field input,
+    body[data-theme="light"] .form-field textarea {
+      background: #f9fafb;
+      border: 1px solid rgba(0,0,0,0.1);
+      color: #111827;
+    }
+    body[data-theme="dark"] .form-field input:focus,
+    body[data-theme="dark"] .form-field textarea:focus  { border-color: rgba(255,255,255,0.25); }
+    body[data-theme="light"] .form-field input:focus,
+    body[data-theme="light"] .form-field textarea:focus { border-color: rgba(0,0,0,0.25); }
+    .form-field input::placeholder,
+    .form-field textarea::placeholder { opacity: 0.35; }
+    .form-field textarea { resize: none; height: 110px; }
+
+    .contact-submit {
+      padding: 13px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.92rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      background: #10b981;
+      color: #020617;
+      transition: opacity 0.15s, transform 0.12s;
+      margin-top: 2px;
+    }
+    .contact-submit:hover  { opacity: 0.88; transform: translateY(-1px); }
+    .contact-submit:active { transform: translateY(0); opacity: 1; }
+
+    /* divider between sections */
+    .help-divider {
+      max-width: 680px;
+      margin: 0 auto 48px;
+      padding: 0 24px;
+    }
+    .help-divider hr {
+      border: none;
+      height: 1px;
+    }
+    body[data-theme="dark"]  .help-divider hr { background: rgba(255,255,255,0.07); }
+    body[data-theme="light"] .help-divider hr { background: rgba(0,0,0,0.07); }
+
+    @media (max-width: 600px) {
+      .help-hero h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+
+<header class="navbar">
+  <div class="logo">
+    <img src="logo-dark.png"  class="logo-img logo-dark"  alt="Teengro" />
+    <img src="logo-light.png" class="logo-img logo-light" alt="Teengro" />
+  </div>
+  <div class="nav-right">
+    <button class="profile-trigger" id="profileTriggerNav" title="My Profile">?</button>
+    <button class="hamburger" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+    <div class="menu-dropdown" id="menuDropdown">
+    <a href="index.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="about.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>About Us</a>
+    <a href="founder.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Meet the Founder</a>
+    <a href="help.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+    <div class="menu-divider"></div>
+    <button id="profileTriggerMenu"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>My Profile</button>
+    <div class="menu-divider"></div>
+    <button id="themeToggle"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Change theme</button>
+    <div class="menu-divider"></div>
+    <a href="login.html" id="navLoginLink"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Login</a>
+    <button id="navLogoutBtn" onclick="logout()" style="display:none;"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="help-hero">
+  <span class="hero-eyebrow">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Support &amp; FAQ
+  </span>
+  <h1>How can we help?</h1>
+  <p>Find answers to common questions, or reach out directly — we're here for you.</p>
+  <div class="hero-scroll-hint">
+    <span>scroll</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="help-section">
+  <h2>Frequently asked questions</h2>
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <button class="faq-question">
+        What is Teengro?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Teengro is a focused AI tutor for students in grades 8–12 that explains concepts step-by-step, adapts to your level, and helps you think clearly instead of memorising blindly.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        Is Teengro free?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Yes. Core learning features are completely free to use.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        I'm having trouble signing in or creating an account.
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Check your registered email and confirm your address by clicking the verification link we sent. Can't find it? Check your spam folder. If the problem persists, use the contact form below.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        I asked a question but got no answer.
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Wait up to 1 minute — the AI may be loading. If nothing appears, refresh the page and try again. Still stuck? Contact us below.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        The chat or AI section isn't working.
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Try refreshing the page and waiting a few minutes. If the issue continues, please report it to our team using the contact form below.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        Which subjects are supported?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Maths, Physics, Chemistry, Biology, English, History &amp; Civics, Geography, and Computer Applications — for ICSE, CBSE, and SSLC boards.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        How do I report a bug?
+        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-answer">Use the contact form below or message us on Instagram <strong>@teengro.in</strong>.</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="help-divider"><hr /></div>
+
+<!-- CONTACT FORM -->
+<section class="help-section">
+  <h2>Contact us</h2>
+
+  <form
+    class="contact-form"
+    action="https://formsubmit.co/teengro.in@gmail.com"
+    method="POST"
+  >
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_subject" value="New Teengro Support Message">
+    <input type="hidden" name="submitted_at" id="submittedAt">
+
+    <div class="form-field">
+      <label>Name</label>
+      <input type="text" name="name" placeholder="Your name" required>
+    </div>
+
+    <div class="form-field">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="you@example.com" required>
+    </div>
+
+    <div class="form-field">
+      <label>Message</label>
+      <textarea name="message" placeholder="Describe your issue or feedback…" required></textarea>
+    </div>
+
+    <button type="submit" class="contact-submit">Send Message</button>
+  </form>
+</section>
+
+<footer class="about-footer">
+  © 2026 Teengro. Built by a teen, for teens.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+<script>
+  document.querySelectorAll(".faq-question").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const item = btn.closest(".faq-item");
+      const isOpen = item.classList.contains("active");
+      // Close all
+      document.querySelectorAll(".faq-item").forEach(i => i.classList.remove("active"));
+      // Open clicked if it was closed
+      if (!isOpen) item.classList.add("active");
+    });
+  });
+
+  document.querySelector(".contact-form").addEventListener("submit", function () {
+    const ist = new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      dateStyle: "full",
+      timeStyle: "medium"
+    });
+    document.getElementById("submittedAt").value = ist + " IST";
+  });
+</script>
+</body>
+</html>

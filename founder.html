@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Meet the student founder behind Teengro — an AI-powered learning platform built for clarity and focus." />
+  <title>Meet the Founder | Teengro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    /* ── HERO ─────────────────────────────────────────── */
+    .founder-hero {
+      min-height: calc(100vh - 54px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 28px 100px;  /* bottom room for scroll hint */
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Soft glow */
+    .founder-hero::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 460px;
+      border-radius: 50%; pointer-events: none; z-index: 0;
+    }
+    body[data-theme="dark"]  .founder-hero::before { background: radial-gradient(ellipse at 50% 25%, rgba(14,165,233,0.07) 0%, transparent 65%); }
+    body[data-theme="light"] .founder-hero::before { background: radial-gradient(ellipse at 50% 25%, rgba(14,165,233,0.05) 0%, transparent 65%); }
+    .founder-hero > * { position: relative; z-index: 1; }
+
+    /* Eyebrow */
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 999px;
+      margin-bottom: 28px;
+    }
+    body[data-theme="dark"]  .hero-eyebrow { background: rgba(14,165,233,0.1); color: #38bdf8; border: 1px solid rgba(14,165,233,0.2); }
+    body[data-theme="light"] .hero-eyebrow { background: rgba(14,165,233,0.07); color: #0284c7; border: 1px solid rgba(14,165,233,0.18); }
+
+    .founder-hero h1 {
+      font-size: clamp(2.4rem, 6.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      letter-spacing: -0.03em;
+    }
+
+    .typewriter {
+      font-family: 'Fira Code', monospace;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-weight: 500;
+      margin-bottom: 28px;
+      min-height: 2rem;
+      display: block;
+    }
+    body[data-theme="dark"]  .typewriter { color: #38bdf8; }
+    body[data-theme="light"] .typewriter { color: #0284c7; }
+    .cursor { display: inline-block; animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .founder-hero .subtext {
+      font-size: 1rem;
+      line-height: 1.72;
+      opacity: 0.52;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Scroll hint */
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 0; right: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 0.2; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      animation: bounce 2.5s ease-in-out infinite;
+      cursor: default;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
+
+    /* ── SECTIONS ─────────────────────────────────────── */
+    .founder-section {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 28px 64px;
+    }
+    .founder-section h2 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.32;
+      margin-bottom: 20px;
+    }
+    .founder-section p {
+      font-size: 0.95rem;
+      line-height: 1.78;
+      margin-bottom: 14px;
+      opacity: 0.78;
+    }
+    .founder-section p strong { opacity: 1; }
+    .founder-section ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .founder-section li {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      opacity: 0.7;
+      padding-left: 22px;
+      position: relative;
+    }
+    .founder-section li::before { content: '—'; position: absolute; left: 0; opacity: 0.35; }
+
+    .founder-divider { max-width: 640px; margin: 0 auto 60px; padding: 0 28px; }
+    .founder-divider hr { border: none; height: 1px; }
+    body[data-theme="dark"]  .founder-divider hr { background: rgba(255,255,255,0.06); }
+    body[data-theme="light"] .founder-divider hr { background: rgba(0,0,0,0.06); }
+
+    .founder-footer-note {
+      text-align: center; opacity: 0.25;
+      font-size: 0.82rem; padding: 0 24px 72px;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 600px) {
+      .founder-hero h1 { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+<header class="navbar">
+  <div class="logo">
+    <img src="logo-dark.png"  class="logo-img logo-dark"  alt="Teengro" />
+    <img src="logo-light.png" class="logo-img logo-light" alt="Teengro" />
+  </div>
+  <div class="nav-right">
+    <button class="profile-trigger" id="profileTriggerNav" title="My Profile">?</button>
+    <button class="hamburger" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+    <div class="menu-dropdown" id="menuDropdown">
+    <a href="index.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+    <a href="about.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>About Us</a>
+    <a href="founder.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Meet the Founder</a>
+    <a href="help.html"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a>
+    <div class="menu-divider"></div>
+    <button id="profileTriggerMenu"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>My Profile</button>
+    <div class="menu-divider"></div>
+    <button id="themeToggle"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Change theme</button>
+    <div class="menu-divider"></div>
+    <a href="login.html" id="navLoginLink"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Login</a>
+    <button id="navLogoutBtn" onclick="logout()" style="display:none;"><svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</button>
+  </div>
+</header>
+
+<div class="founder-hero">
+  <span class="hero-eyebrow">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Meet the founder
+  </span>
+  <h1>Sushanth Kumar</h1>
+  <div class="typewriter"><span id="founderText"></span><span class="cursor">|</span></div>
+  <p class="subtext">Founder of Teengro — built with optimism, discipline, and a belief that students can do far more than they're told.</p>
+  <div class="hero-scroll-hint">
+    <span>scroll</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</div>
+
+<div class="founder-divider"><hr /></div>
+
+<section class="founder-section">
+  <p>I'm <strong>Bandaru Sushanth Kumar</strong>, a student, but more importantly, a builder. I've always believed that waiting for the "right age", the "right time", or permission from others only delays growth.</p>
+  <p>Teengro was born from optimism — the belief that students are capable of clarity, depth, and excellence when given the right tools and environment.</p>
+  <p>I don't see limitations as permanent. I see them as systems waiting to be redesigned.</p>
+</section>
+
+<div class="founder-divider"><hr /></div>
+
+<section class="founder-section">
+  <h2>Why I built Teengro</h2>
+  <p>Too many students lose confidence not because they lack ability, but because learning feels rushed, noisy, and impersonal.</p>
+  <p>I wanted to build something calm. Something that explains instead of pressures. Something that grows with the student.</p>
+  <p>Teengro is my answer to that problem — a platform where understanding comes first, and confidence follows naturally.</p>
+</section>
+
+<div class="founder-divider"><hr /></div>
+
+<section class="founder-section">
+  <h2>What drives me</h2>
+  <ul>
+    <li>Optimism rooted in effort, not motivation</li>
+    <li>Belief that age should never cap ambition</li>
+    <li>Discipline over shortcuts</li>
+    <li>Learning that feels clear, not chaotic</li>
+    <li>Building systems that help others grow</li>
+  </ul>
+</section>
+
+<div class="founder-divider"><hr /></div>
+
+<section class="founder-section">
+  <h2>The long-term vision</h2>
+  <p>Teengro isn't meant to be just another study tool. It's being built as a long-term ecosystem for student growth, focus, and self-belief.</p>
+  <p>My vision is simple but ambitious: help students feel capable early, think independently, and build confidence before the world tells them to wait.</p>
+  <p>This is only the beginning.</p>
+</section>
+
+<footer class="about-footer">© 2026 Teengro. Built by a teen, for teens.</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const el = document.getElementById("founderText");
+  if (!el) return;
+  const words = ["Student","Entrepreneur","Philanthropist","Athlete","Optimist","Builder"];
+  let wordIndex = 0, charIndex = 0, isDeleting = false;
+  function loop() {
+    const current = words[wordIndex];
+    el.textContent = isDeleting ? current.substring(0, charIndex - 1) : current.substring(0, charIndex + 1);
+    isDeleting ? charIndex-- : charIndex++;
+    if (!isDeleting && charIndex === current.length) setTimeout(() => isDeleting = true, 1200);
+    if (isDeleting && charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % words.length; }
+    setTimeout(loop, isDeleting ? 80 : 120);
+  }
+  loop();
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+</body>
+</html> 
